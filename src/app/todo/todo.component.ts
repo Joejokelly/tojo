@@ -27,7 +27,7 @@ export class TodoComponent implements OnInit {
 
 
     if (this.id != -1) {
-    this.todoService.retreiveTodo('in28minutes', this.id)
+    this.todoService.retrieveTodo('in28minutes', this.id)
         .subscribe(
           data => this.todo = data
        )

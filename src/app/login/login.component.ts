@@ -1,7 +1,9 @@
-import { ThrowStmt } from '@angular/compiler';
+//import { BasicAuthenticationService } from './../service/basic-authentication.service';
+
+import { HardcodedAuthenticationService } from './../service/hardcoded-authentication.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HardcodedAuthenticationService } from '../service/hardcoded-authentication.service';
+import { BasicAuthenticationService } from '../service/http/basic-authentication.service';
 
 @Component({
   selector: 'app-login',
@@ -9,36 +11,65 @@ import { HardcodedAuthenticationService } from '../service/hardcoded-authenticat
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-   username = 'in28minutes'
-   password = ''
-   invalidLogin = false
-   invalidMessage = 'Invalid Login'
 
+  username = 'in28minutes'
+  password = ''
+  errorMessage = 'Invalid Credentials'
+  invalidLogin = false
 
-   //Router Dependency Injection
+  //Router
+  //Angular.giveMeRouter
+  //Dependency Injection
   constructor(private router: Router,
-              public hardcodedAuthenticationService: HardcodedAuthenticationService) {
-                
-              }
-
-
-              
+    private hardcodedAuthenticationService: HardcodedAuthenticationService,
+    private basicAuthenticationService: BasicAuthenticationService) { }
 
   ngOnInit() {
   }
 
   handleLogin() {
-    //console.log(this.username)
-    //console.log(this.password)
-
-    if (this.hardcodedAuthenticationService.authenticate(this.username, this.password)) {
+    // console.log(this.username);
+    //if(this.username==="in28minutes" && this.password === 'dummy') {
+    if(this.hardcodedAuthenticationService.authenticate(this.username, this.password)) {
+      //Redirect to Welcome Page
       this.router.navigate(['welcome', this.username])
       this.invalidLogin = false
-    }
-    else {
+    } else {
       this.invalidLogin = true
     }
+  }
 
+  handleBasicAuthLogin() {
+    // console.log(this.username);
+    //if(this.username==="in28minutes" && this.password === 'dummy') {
+    this.basicAuthenticationService.executeJWTAuthenticationService(this.username, this.password)
+        .subscribe(
+          data => {
+            console.log(data)
+            this.router.navigate(['welcome', this.username])
+            this.invalidLogin = false      
+          },
+          error => {
+            console.log(error)
+            this.invalidLogin = true
+          }
+        )
+  }
+
+  handleJWTAuthLogin() {
+    this.basicAuthenticationService.executeJWTAuthenticationService(this.username, this.password)
+        .subscribe(
+          data => {
+            console.log(data)
+            this.router.navigate(['welcome', this.username])
+            this.invalidLogin = false      
+          },
+          error => {
+            console.log(error)
+            this.invalidLogin = true
+          }
+        )
   }
 
 }
+
